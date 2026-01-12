@@ -26,12 +26,12 @@ public class VideoController {
         // Extração simples do ID (ajuste conforme seu padrão de Token)
         UUID userId = UUID.fromString(auth.replace("Bearer ", ""));
 
-        Video video = videoService.uploadVideo(userId, title, description, file);
+        Video video = videoService.iniciarUpload(file,userId, title, description);
 
-        return ResponseEntity.ok(new VideoResponseDTO(
+        return ResponseEntity.accepted().body(new VideoResponseDTO(
                 video.getVideoId(),
-                video.getDescricao(),
-                "PROCESSANDO"
+                "Upload iniciado com sucesso. Acompanhe o status pelo ID.",
+                video.getStatus().toString()
         ));
     }
 }
