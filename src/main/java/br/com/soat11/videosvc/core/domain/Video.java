@@ -32,13 +32,13 @@ public class Video {
     private LocalDateTime videoUpDate;
 
     @Column(name = "status")
-    private Integer status; // 1-RECEBIDO, 2-UPLOADED, etc.
+    private Integer status;
 
-    @Column(name = "video_path", length = 200)
-    private String videoPath; // path/video-nome
+    @Column(name = "video_name", length = 200) // Mudou de video_path
+    private String videoName;
 
-    @Column(name = "zip_path", length = 200)
-    private String zipPath;   // path/zip-nome
+    @Column(name = "zip_name", length = 200)   // Mudou de zip_path
+    private String zipName;
 
     @Column(name = "descricao", length = 500)
     private String descricao;

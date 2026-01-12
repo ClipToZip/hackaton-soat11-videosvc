@@ -13,7 +13,7 @@ public class KafkaProducerImpl {
 
     public void sendVideoEvent(Video video) {
         // Enviamos um mapa ou DTO para o tópico
-        var event = new VideoEventDTO(video.getVideoId(), video.getUserId(), video.getVideoPath());
+        var event = new VideoEventDTO(video.getVideoId(), video.getUserId(), video.getVideoName());
         kafkaTemplate.send("video-processing-topic", event);
     }
 }
