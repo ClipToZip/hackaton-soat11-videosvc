@@ -1,5 +1,6 @@
 package br.com.soat11.videosvc.application.service;
 
+import br.com.soat11.videosvc.application.dto.VideoStatusDTO;
 import br.com.soat11.videosvc.core.domain.Video;
 import br.com.soat11.videosvc.core.ports.VideoStoragePort;
 import br.com.soat11.videosvc.infra.messaging.KafkaProducerImpl;
@@ -10,6 +11,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -69,6 +71,24 @@ public class VideoService {
             });
             System.err.println("ERRO no fluxo assíncrono: " + e.getMessage());
         }
+    }
+
+    public List<VideoStatusDTO> listarVideosPorUsuario(UUID userId) {
+        return videoRepository.findByUserIdOrderByVideoUpDateDesc(userId)
+                .stream()
+                .map(VideoStatusDTO::fromEntity)
+                .toList();
+    }
+
+    public String obterLinkDownloadZip(UUID videoId) {
+        Video video = videoRepository.findById(videoId)
+                .orElseThrow(() -> new RuntimeException("Vídeo não encontrado"));
+
+        if (video.getZipName() == null) {
+            throw new RuntimeException("O processamento do ZIP ainda não foi concluído.");
+        }
+
+        return storagePort.generateDownloadUrl(video.getZipName());
     }
 }
 

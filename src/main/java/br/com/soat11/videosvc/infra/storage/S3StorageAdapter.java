@@ -10,9 +10,13 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
 import java.io.IOException;
+import java.time.Duration;
 
 @Service
 @Primary
@@ -20,6 +24,9 @@ public class S3StorageAdapter implements VideoStoragePort {
 
     private final S3Client s3Client;
     private final String bucketName;
+    private final String accessKey; // Adicione este atributo
+    private final String secretKey; // Adicione este atributo
+    private final Region region;    // Adicione este atributo
 
     public S3StorageAdapter(
             @Value("${aws.s3.bucket-name}") String bucketName,
@@ -28,10 +35,14 @@ public class S3StorageAdapter implements VideoStoragePort {
             @Value("${aws.secret-key}") String secretKey) {
 
         this.bucketName = bucketName;
+        this.accessKey = accessKey; // Atribua aqui
+        this.secretKey = secretKey; // Atribua aqui
+        this.region = Region.of(region); // Salve a região
+
         AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
 
         this.s3Client = S3Client.builder()
-                .region(Region.of(region))
+                .region(this.region)
                 .credentialsProvider(StaticCredentialsProvider.create(credentials))
                 .build();
     }
@@ -74,6 +85,31 @@ public class S3StorageAdapter implements VideoStoragePort {
 
         } catch (IOException e) {
             throw new RuntimeException("Erro ao processar bytes do arquivo para o S3", e);
+        }
+    }
+
+    public String generateDownloadUrl(String zipName) {
+        String s3Key = "zip/" + zipName;
+
+        try (S3Presigner presigner = S3Presigner.builder()
+                .region(this.region)
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(this.accessKey, this.secretKey)))
+                .build()) {
+
+            // O segredo está aqui: instruímos o S3 a enviar o header Content-Disposition
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(s3Key)
+                    .responseContentDisposition("attachment; filename=\"" + zipName + "\"")
+                    .build();
+
+            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofMinutes(15))
+                    .getObjectRequest(getObjectRequest)
+                    .build();
+
+            return presigner.presignGetObject(presignRequest).url().toString();
         }
     }
 }
