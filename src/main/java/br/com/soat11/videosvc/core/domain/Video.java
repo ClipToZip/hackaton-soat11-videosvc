@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-@Table(name = "videos")
+@Table(name = "videos", schema = "cliptozip")
 @Getter
 @Setter
 @Builder
