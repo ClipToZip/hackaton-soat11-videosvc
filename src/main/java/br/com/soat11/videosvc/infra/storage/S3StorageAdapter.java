@@ -89,7 +89,7 @@ public class S3StorageAdapter implements VideoStoragePort {
     }
 
     public String generateDownloadUrl(String zipName) {
-        String s3Key = "zip/" + zipName;
+        String s3Key = zipName;
 
         try (S3Presigner presigner = S3Presigner.builder()
                 .region(this.region)

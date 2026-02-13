@@ -29,3 +29,11 @@ databaseChangeLog:
             path: migrations/20260111-drop-columns-again.sql
             relativeToChangelogFile: true
 
+  - changeSet:
+      id: 20260211-create-new-videos-table
+      author: felipe.paruce
+      changes:
+        - sqlFile:
+            encoding: utf8
+            path: migrations/20260211-create-new-videos-table.sql
+            relativeToChangelogFile: true
