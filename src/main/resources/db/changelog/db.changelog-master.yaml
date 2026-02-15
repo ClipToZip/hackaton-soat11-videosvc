@@ -1,39 +1,8 @@
 databaseChangeLog:
-  - include:
-      file: db/changelog/migrations/20240520-create-videos-table.sql
-
   - changeSet:
-      id: 20260111-update-video-table
-      author: rafael.azevedo
+      id: 001-create-videos-table
+      author: rafael
       changes:
         - sqlFile:
-            encoding: utf8
-            path: migrations/20260111-update-video-table.sql
-            relativeToChangelogFile: true
-
-  - changeSet:
-      id: 20260111-drop-columns-video-table
-      author: rafael.azevedo
-      changes:
-        - sqlFile:
-            encoding: utf8
-            path: migrations/20260111-drop-columns-video-table.sql
-            relativeToChangelogFile: true
-
-  - changeSet:
-      id: 20260111-drop-columns-again
-      author: rafael.azevedo
-      changes:
-        - sqlFile:
-            encoding: utf8
-            path: migrations/20260111-drop-columns-again.sql
-            relativeToChangelogFile: true
-
-  - changeSet:
-      id: 20260211-create-new-videos-table
-      author: felipe.paruce
-      changes:
-        - sqlFile:
-            encoding: utf8
-            path: migrations/20260211-create-new-videos-table.sql
+            path: migrations/001-create-videos-table.sql
             relativeToChangelogFile: true
