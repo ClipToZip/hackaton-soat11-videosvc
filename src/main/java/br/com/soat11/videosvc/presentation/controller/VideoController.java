@@ -23,12 +23,16 @@ public class VideoController {
     @PostMapping
     public ResponseEntity<?> upload(
             @RequestHeader("Authorization") String auth,
+            @RequestParam UUID userId,
             @RequestParam String title,
             @RequestParam String description,
             @RequestParam MultipartFile file) {
 
-        // Extração simples do ID (ajuste conforme seu padrão de Token)
-        UUID userId = UUID.fromString(auth.replace("Bearer ", ""));
+        // Valida o token antes de qualquer ação
+        boolean tokenValido = videoService.validarToken(auth);
+        if (!tokenValido) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido");
+        }
 
         Video video = videoService.iniciarUpload(file,userId, title, description);
 
