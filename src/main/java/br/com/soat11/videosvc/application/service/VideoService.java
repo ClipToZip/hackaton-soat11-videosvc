@@ -29,6 +29,10 @@ public class VideoService {
     private String externalApiUrl;
     private final RestTemplate restTemplate = new RestTemplate();
 
+    @Value("${external.api.url}")
+    private String externalApiUrl;
+    private final RestTemplate restTemplate = new RestTemplate();
+
     public VideoService (VideoRepository videoRepository,
                          VideoStoragePort storagePort,
                          SqsProducer sqsProducer) {
@@ -94,6 +98,7 @@ public class VideoService {
 
     public boolean validarToken (String token) {
         try {
+            // Monta o JSON com o atributo 'token'
             java.util.Map<String, String> body = new java.util.HashMap<>();
             body.put("token", token);
             HttpEntity<Map<String, String>> entity = new HttpEntity<>(body);

@@ -1,7 +1,8 @@
---liquibase formatted sql
+-- ==========================================
+-- TABELA VIDEOS - CLIPTOZIP
+-- ==========================================
 
---changeset soat11:1
-CREATE TABLE videos (
+CREATE TABLE cliptozip.videos (
     video_id UUID PRIMARY KEY,
     user_id UUID NOT NULL,
     data_video_up TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
