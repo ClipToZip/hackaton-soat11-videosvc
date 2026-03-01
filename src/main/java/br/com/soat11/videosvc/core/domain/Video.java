@@ -17,6 +17,8 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(of = {"videoId", "userId", "videoUpDate"})
+@ToString
 public class Video {
 
     @Id
@@ -49,4 +51,8 @@ public class Video {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "metadados", columnDefinition = "jsonb")
     private Map<String, Object> metadados;
+
+    public Integer getStatus() {
+        return status;
+    }
 }

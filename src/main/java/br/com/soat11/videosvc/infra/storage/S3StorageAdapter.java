@@ -47,6 +47,15 @@ public class S3StorageAdapter implements VideoStoragePort {
                 .build();
     }
 
+    // Construtor para testes
+    public S3StorageAdapter(S3Client s3Client, String bucketName, String accessKey, String secretKey, Region region) {
+        this.s3Client = s3Client;
+        this.bucketName = bucketName;
+        this.accessKey = accessKey;
+        this.secretKey = secretKey;
+        this.region = region;
+    }
+
     @Override
     public String store(MultipartFile file, String fileName) {
         try {
@@ -76,7 +85,7 @@ public class S3StorageAdapter implements VideoStoragePort {
                     .build();
 
             // 4. Upload
-            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
+            getS3Client().putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
 
             System.out.println("DEBUG: Upload concluído na pasta 'videos/'. Arquivo: " + fileNameWithExt);
 
@@ -111,5 +120,9 @@ public class S3StorageAdapter implements VideoStoragePort {
 
             return presigner.presignGetObject(presignRequest).url().toString();
         }
+    }
+
+    protected S3Client getS3Client() {
+        return this.s3Client;
     }
 }

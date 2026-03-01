@@ -6,11 +6,16 @@ import br.com.soat11.videosvc.core.domain.Video;
 import br.com.soat11.videosvc.core.ports.VideoStoragePort;
 import br.com.soat11.videosvc.infra.messaging.SqsProducer;
 import br.com.soat11.videosvc.infra.persistence.VideoRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -18,7 +23,11 @@ public class VideoService {
 
     private final VideoRepository videoRepository;
     private final VideoStoragePort storagePort;
-    private final SqsProducer sqsProducer; // Seu componente de Kafka
+    private final SqsProducer sqsProducer;
+
+    @Value("${external.api.url}")
+    private String externalApiUrl;
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public VideoService (VideoRepository videoRepository,
                          VideoStoragePort storagePort,
@@ -29,7 +38,6 @@ public class VideoService {
     }
 
     public Video iniciarUpload (MultipartFile file, UUID userId, String titulo, String descricao) {
-        // 1. Salva o registro inicial (Rápido)
         Video video = Video.builder()
                 .userId(userId)
                 .titulo(titulo)
@@ -39,7 +47,6 @@ public class VideoService {
 
         Video salvo = videoRepository.save(video);
 
-        // 2. Dispara o processo pesado em background
         uploadENotificarSqs(file, salvo.getVideoId());
 
         return salvo;
@@ -48,17 +55,12 @@ public class VideoService {
     @Async
     public void uploadENotificarSqs (MultipartFile file, UUID videoId) {
         try {
-            // 3. Faz o upload para o S3 (o tal processo de 10 segundos)
             String finalFileName = storagePort.store(file, videoId.toString());
 
-            // 4. Atualiza o banco para UPLOADED
             Video video = videoRepository.findById(videoId).orElseThrow();
             video.setVideoName(finalFileName);
-            //video.setStatus(2);
             videoRepository.save(video);
 
-            // 5. NOTIFICA O SQS (O pulo do gato)
-            // Enviamos um DTO ou o próprio objeto para a fila de processamento
             sqsProducer.sendMessage(new VideoEventDTO(video.getVideoId(), video.getVideoName()));
 
             System.out.println("DEBUG: Upload concluído e mensagem enviada ao SQS: " + finalFileName);
@@ -88,6 +90,20 @@ public class VideoService {
         }
 
         return storagePort.generateDownloadUrl(video.getZipName());
+    }
+
+    public boolean validarToken (String token) {
+        try {
+            java.util.Map<String, String> body = new java.util.HashMap<>();
+            body.put("token", token);
+            HttpEntity<Map<String, String>> entity = new HttpEntity<>(body);
+            ResponseEntity<Void> response = restTemplate.postForEntity(
+                    externalApiUrl, entity, Void.class);
+            return response.getStatusCode().is2xxSuccessful();
+        } catch (Exception e) {
+            System.err.println("Erro ao validar token: " + e.getMessage());
+            return false;
+        }
     }
 }
 
