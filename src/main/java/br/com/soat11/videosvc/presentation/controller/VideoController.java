@@ -3,6 +3,7 @@ package br.com.soat11.videosvc.presentation.controller;
 import br.com.soat11.videosvc.application.dto.VideoStatusDTO;
 import br.com.soat11.videosvc.application.service.VideoService;
 import br.com.soat11.videosvc.core.domain.Video;
+import br.com.soat11.videosvc.utils.JwtDecoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class VideoController {
             @RequestParam UUID userId,
             @RequestParam String title,
             @RequestParam String description,
-            @RequestParam MultipartFile file) {
+            @RequestParam MultipartFile file) throws Exception {
 
         // Valida o token antes de qualquer ação
         boolean tokenValido = videoService.validarToken(auth);
@@ -58,7 +59,6 @@ public class VideoController {
     public ResponseEntity<Void> downloadZip(@PathVariable UUID videoId) {
         String downloadUrl = videoService.obterLinkDownloadZip(videoId);
 
-        // Retorna um redirecionamento 302 para a URL da AWS
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(downloadUrl))
                 .build();

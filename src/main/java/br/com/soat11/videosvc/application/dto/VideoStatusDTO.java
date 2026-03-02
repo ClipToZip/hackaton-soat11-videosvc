@@ -14,7 +14,8 @@ public record VideoStatusDTO(
         LocalDateTime dataUpload
 ) {
     public static VideoStatusDTO fromEntity(Video video) {
-        String descricao = switch (video.getStatus()) {
+        Integer status = video.getStatus();
+        String descricao = switch (status != null ? status : -1) {
             case 1 -> "Recebido / Upload em processamento";
             case 2 -> "Upload concluído / Pronto para processar";
             case 3 -> "Processamento finalizado";
@@ -26,7 +27,7 @@ public record VideoStatusDTO(
                 video.getVideoId(),
                 video.getTitulo(),
                 video.getVideoName(),
-                video.getStatus(),
+                status,
                 descricao,
                 video.getVideoUpDate()
         );

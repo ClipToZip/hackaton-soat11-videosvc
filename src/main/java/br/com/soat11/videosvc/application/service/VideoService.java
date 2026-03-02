@@ -23,7 +23,11 @@ public class VideoService {
 
     private final VideoRepository videoRepository;
     private final VideoStoragePort storagePort;
-    private final SqsProducer sqsProducer; // Seu componente de Kafka
+    private final SqsProducer sqsProducer;
+
+    @Value("${external.api.url}")
+    private String externalApiUrl;
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Value("${external.api.url}")
     private String externalApiUrl;
@@ -38,7 +42,6 @@ public class VideoService {
     }
 
     public Video iniciarUpload (MultipartFile file, UUID userId, String titulo, String descricao) {
-        // 1. Salva o registro inicial (Rápido)
         Video video = Video.builder()
                 .userId(userId)
                 .titulo(titulo)
@@ -48,7 +51,6 @@ public class VideoService {
 
         Video salvo = videoRepository.save(video);
 
-        // 2. Dispara o processo pesado em background
         uploadENotificarSqs(file, salvo.getVideoId());
 
         return salvo;
@@ -57,17 +59,12 @@ public class VideoService {
     @Async
     public void uploadENotificarSqs (MultipartFile file, UUID videoId) {
         try {
-            // 3. Faz o upload para o S3 (o tal processo de 10 segundos)
             String finalFileName = storagePort.store(file, videoId.toString());
 
-            // 4. Atualiza o banco para UPLOADED
             Video video = videoRepository.findById(videoId).orElseThrow();
             video.setVideoName(finalFileName);
-            //video.setStatus(2);
             videoRepository.save(video);
 
-            // 5. NOTIFICA O SQS (O pulo do gato)
-            // Enviamos um DTO ou o próprio objeto para a fila de processamento
             sqsProducer.sendMessage(new VideoEventDTO(video.getVideoId(), video.getVideoName()));
 
             System.out.println("DEBUG: Upload concluído e mensagem enviada ao SQS: " + finalFileName);
