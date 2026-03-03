@@ -1,6 +1,7 @@
 package br.com.soat11.videosvc.infra.storage;
 
 import br.com.soat11.videosvc.core.ports.VideoStoragePort;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class S3StorageAdapter implements VideoStoragePort {
     private final String secretKey; // Adicione este atributo
     private final Region region;    // Adicione este atributo
 
+    @Autowired
     public S3StorageAdapter(
             @Value("${aws.s3.bucket-name}") String bucketName,
             @Value("${aws.region}") String region,

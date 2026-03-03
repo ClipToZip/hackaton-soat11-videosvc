@@ -29,10 +29,6 @@ public class VideoService {
     private String externalApiUrl;
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${external.api.url}")
-    private String externalApiUrl;
-    private final RestTemplate restTemplate = new RestTemplate();
-
     public VideoService (VideoRepository videoRepository,
                          VideoStoragePort storagePort,
                          SqsProducer sqsProducer) {
