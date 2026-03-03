@@ -24,18 +24,19 @@ public class VideoController {
     @PostMapping
     public ResponseEntity<?> upload(
             @RequestHeader("Authorization") String auth,
-            @RequestParam UUID userId,
             @RequestParam String title,
             @RequestParam String description,
             @RequestParam MultipartFile file) throws Exception {
 
         // Valida o token antes de qualquer ação
-        boolean tokenValido = videoService.validarToken(auth);
+        boolean tokenValido = videoService.validarToken(auth.split(" ")[1]);
         if (!tokenValido) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido");
         }
 
-        Video video = videoService.iniciarUpload(file,userId, title, description);
+        UUID userId = UUID.fromString(JwtDecoder.extractSubWithoutValidation(auth));
+
+        Video video = videoService.iniciarUpload(file, userId, title, description);
 
         return ResponseEntity.accepted().body(new VideoResponseDTO(
                 video.getVideoId(),
@@ -45,7 +46,12 @@ public class VideoController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<VideoStatusDTO>> listar(@PathVariable UUID userId) {
+    public ResponseEntity<List<VideoStatusDTO>> listar(@PathVariable UUID userId, @RequestHeader("Authorization") String auth) {
+        boolean tokenValido = videoService.validarToken(auth.split(" ")[1]);
+        if (!tokenValido) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
         List<VideoStatusDTO> videos = videoService.listarVideosPorUsuario(userId);
 
         if (videos.isEmpty()) {
@@ -56,7 +62,12 @@ public class VideoController {
     }
 
     @GetMapping("/{videoId}/download-zip")
-    public ResponseEntity<Void> downloadZip(@PathVariable UUID videoId) {
+    public ResponseEntity<Void> downloadZip(@PathVariable UUID videoId,  @RequestHeader("Authorization") String auth) {
+        boolean tokenValido = videoService.validarToken(auth.split(" ")[1]);
+        if (!tokenValido) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
         String downloadUrl = videoService.obterLinkDownloadZip(videoId);
 
         return ResponseEntity.status(HttpStatus.FOUND)
