@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-videos-table
+      author: rafael
+      changes:
+        - sqlFile:
+            path: migrations/001-create-videos-table.sql
+            relativeToChangelogFile: true
