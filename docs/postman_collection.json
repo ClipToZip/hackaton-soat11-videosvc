@@ -1,0 +1,107 @@
+{
+  "info": {
+    "_postman_id": "6cba728d-e4c2-4023-862d-c57cddc45fa4",
+    "name": " CLIPEZIP - VIDEO SERVICE",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "20065981"
+  },
+  "item": [
+    {
+      "name": "uploadVideo",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyYWZhZWxoYXpldmVkbzYxQGdtYWlsLmNvbSIsImlhdCI6MTc3MTE5NTI1NywiZXhwIjoxNzcxMTk4ODU3fQ.h8jFcgG-kAqOG6xbdwdYUnOOWAGmv2JtFgvbZ-S3-vM",
+            "type": "default"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "title",
+              "value": "Meu Video de Teste",
+              "type": "default"
+            },
+            {
+              "key": "description",
+              "value": "Descricao de processamento",
+              "type": "default"
+            },
+            {
+              "key": "file",
+              "type": "file",
+              "fileNotInWorkingDirectoryWarning": "This file isn't in your working directory. Teammates you share this request with won't be able to use this file. To make collaboration easier you can setup your working directory in Settings.",
+              "src": "/C:/Users/rafae/Videos/Sentando.mp4"
+            },
+            {
+              "key": "userId",
+              "value": "ddf1fdbb-b0db-42bb-a6fb-33f88189aa98",
+              "type": "text",
+              "uuid": "7d450ba2-521a-4267-9a0d-80d837269aef"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:3010/api/videos",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3010",
+          "path": [
+            "api",
+            "videos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getListVideos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3010/api/videos/user/550e8400-e29b-41d4-a716-446655440000",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3010",
+          "path": [
+            "api",
+            "videos",
+            "user",
+            "550e8400-e29b-41d4-a716-446655440000"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "downloadZIP",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/videos/deefe9bf-a8e7-4531-bfeb-bf9d3108d207/download-zip",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "videos",
+            "deefe9bf-a8e7-4531-bfeb-bf9d3108d207",
+            "download-zip"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
