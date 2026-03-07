@@ -109,7 +109,7 @@ Após a execução, o relatório estará disponível em:
 ## 📂 Recursos Adicionais
 
 *   **Postman Collection**: Para facilitar os testes e a integração, disponibilizamos uma collection do Postman com as requisições configuradas.
-    *   [Baixar Collection Postman](docs/ClickToZip-Auth.postman_collection.json)
+    *   [Baixar Collection Postman](docs/postman_collection.json)
 ---
 
 ## 👥 Autores - Grupo 13
